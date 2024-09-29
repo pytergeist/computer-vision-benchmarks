@@ -1,81 +1,60 @@
 # resnet.py
 
 import tensorflow as tf
+
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 
-weight_decay = 1e-4
+from compvis.blocks.resnet_block import ResNetBlock
 
 
 class ResNet(tf.keras.Model):
-    def __init__(self, input_shape, num_classes, *args, **kwargs):
-        super(ResNet, self).__init__(*args, **kwargs)
-
-    def resnet_block(self, inputs, filters, kernel_size, strides, padding):
-        shortcut = inputs
-        x = layers.Conv1D(
-            filters=filters,
-            kernel_size=kernel_size,
-            strides=strides,
-            padding="same",
-            kernel_regularizer=regularizers.l2(weight_decay),
-        )(inputs)
-        x = layers.BatchNormalization()(x)
-        x = layers.ReLU()(x)
-        x = layers.Conv1D(
-            filters=filters,
-            kernel_size=kernel_size,
-            strides=1,
-            padding="same",
-            kernel_regularizer=regularizers.l2(weight_decay),
-        )(x)
-        x = layers.BatchNormalization()(x)
-
-        if filters != inputs.shape[-1] or strides != 1:
-            shortcut = layers.Conv1D(
-                filters=filters,
-                kernel_size=1,
-                strides=strides,
-                padding="same",
-                kernel_regularizer=regularizers.l2(weight_decay),
-            )(inputs)
-            shortcut = layers.BatchNormalization()(shortcut)
-
-        x = layers.Add()([shortcut, x])
-        x = layers.ReLU()(x)
-
-        return x
-
-    def call(
+    def __init__(
         self,
-        rdf_shape,
         num_classes,
         num_filters=64,
         num_blocks=[2, 2, 2, 2],
         dropout_rate=0.2,
+        **kwargs
     ):
-        x = layers.Conv1D(
+        super(ResNet, self).__init__(**kwargs)
+        self.initial_conv = layers.Conv1D(
             filters=num_filters,
             kernel_size=7,
             strides=2,
             padding="same",
             kernel_regularizer=regularizers.l2(weight_decay),
-        )(rdf_input)
-        x = layers.BatchNormalization()(x)
-        x = layers.ReLU()(x)
-        x = layers.MaxPooling1D(pool_size=3, strides=2, padding="same")(x)
+        )
+        self.initial_bn = layers.BatchNormalization()
+        self.initial_relu = layers.ReLU()
+        self.initial_pool = layers.MaxPooling1D(pool_size=3, strides=2, padding="same")
 
+        self.resnet_blocks = []
         for i, num_block in enumerate(num_blocks):
             for j in range(num_block):
                 strides = 2 if i > 0 and j == 0 else 1
-
-                x = self.resnet_block(
-                    x,
-                    filters=num_filters * (2**i),
-                    kernel_size=3,
-                    strides=strides,
-                    dropout_rate=dropout_rate,
+                self.resnet_blocks.append(
+                    ResNetBlock(
+                        filters=num_filters * (2**i),
+                        kernel_size=3,
+                        strides=strides,
+                        dropout_rate=dropout_rate,
+                    )
                 )
 
-        x = layers.GlobalAveragePooling1D()(x)
-        x_out = layers.Dense(units=num_classes, activation="relu")(x)
+        self.global_avg_pool = layers.GlobalAveragePooling1D()
+        self.fc = layers.Dense(units=num_classes, activation="relu")
+
+    def call(self, inputs, training=False):
+        x = self.initial_conv(inputs)
+        x = self.initial_bn(x, training=training)
+        x = self.initial_relu(x)
+        x = self.initial_pool(x)
+
+        for block in self.resnet_blocks:
+            x = block(x, training=training)
+
+        x = self.global_avg_pool(x)
+        x_out = self.fc(x)
+
+        return x_out

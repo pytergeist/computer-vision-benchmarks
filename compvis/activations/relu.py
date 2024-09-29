@@ -30,8 +30,23 @@ class ReLU(tf.keras.layers.Layer):
 
 
 if __name__ == "__main__":
+    # Example usage with valid inputs
     inputs = tf.random.uniform(shape=[1, 10, 10], minval=-0.5, maxval=0.9)
     relu = ReLU()
     outputs = relu(inputs)
-    print(inputs)
-    print(outputs)
+    print("Inputs:\n", inputs)
+    print("Outputs:\n", outputs)
+
+    # Uncomment the following lines to test fault tolerance
+
+    # Test with None input
+    # try:
+    #     outputs = relu(None)
+    # except ValueError as e:
+    #     print(e)
+
+    # Test with invalid input type
+    # try:
+    #     outputs = relu([1, 2, 3])
+    # except TypeError as e:
+    #     print(e)
