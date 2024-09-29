@@ -26,7 +26,7 @@ class Dropout(tf.keras.layers.Layer):
 
     @staticmethod
     def _validate_rate(rate):
-        assert 0 <= rate <= 1, "Dropout rate must be between 0 and 1"
+        assert 0.0 <= rate <= 1.0, "Dropout rate must be between 0 and 1"
 
     def get_config(self):
         config = super(Dropout, self).get_config()
