@@ -8,7 +8,21 @@ class ReLU(tf.keras.layers.Layer):
         super(ReLU, self).__init__(**kwargs)
 
     def call(self, inputs):
+        self._validate_input_populated(inputs)
+        self._validate_input_is_tensor(inputs)
         return tf.math.maximum(inputs, 0)
+
+    @staticmethod
+    def _validate_input_populated(inputs):
+        if inputs is None:
+            raise ValueError("Input to ReLU cannot be None.")
+
+    @staticmethod
+    def _validate_input_is_tensor(inputs):
+        if not isinstance(inputs, tf.Tensor):
+            raise TypeError(
+                f"Input must be a TensorFlow tensor, but got {type(inputs)}"
+            )
 
     def get_config(self):
         config = super(ReLU, self).get_config()
