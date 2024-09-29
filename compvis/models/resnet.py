@@ -18,6 +18,11 @@ class ResNet(tf.keras.Model):
         **kwargs
     ):
         super(ResNet, self).__init__(**kwargs)
+        self.num_classes = num_classes
+        self.num_filters = num_filters
+        self.num_blocks = num_blocks
+        self.dropout_rate = dropout_rate
+
         self.initial_conv = layers.Conv1D(
             filters=num_filters,
             kernel_size=7,
@@ -44,6 +49,20 @@ class ResNet(tf.keras.Model):
 
         self.global_avg_pool = layers.GlobalAveragePooling1D()
         self.fc = layers.Dense(units=num_classes, activation="relu")
+
+    def generate_resnet_blocks(self):
+        self.resnet_blocks = []
+        for i, num_block in enumerate(self.num_blocks):
+            for j in range(num_block):
+                strides = 2 if i > 0 and j == 0 else 1
+                self.resnet_blocks.append(
+                    ResNetBlock(
+                        filters=self.num_filters * (2 ** i),
+                        kernel_size=3,
+                        strides=strides,
+                        dropout_rate=self.dropout_rate,
+                    )
+                )
 
     def call(self, inputs, training=False):
         x = self.initial_conv(inputs)
