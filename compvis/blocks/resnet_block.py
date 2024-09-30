@@ -1,12 +1,12 @@
-# resnet_block.py
-
 import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 
 
-class ResNetBlock(tf.keras.Model):
-    def __init__(self, filters, kernel_size, strides, weight_decay, **kwargs):
+class ResNetBlock(tf.keras.layers.Layer):
+    def __init__(
+        self, filters, kernel_size, strides, weight_decay, dropout_rate=None, **kwargs
+    ):
         super(ResNetBlock, self).__init__(**kwargs)
         self.conv1 = layers.Conv1D(
             filters=filters,
@@ -28,27 +28,39 @@ class ResNetBlock(tf.keras.Model):
 
         self.shortcut_conv = None
         self.shortcut_bn = None
-        if filters != self.conv1.input_shape[-1] or strides != 1:
+
+    def build_shortcut(self, inputs):
+        if self.shortcut_conv is None and inputs.shape[-1] != self.conv1.filters:
             self.shortcut_conv = layers.Conv1D(
-                filters=filters,
+                filters=self.conv1.filters,
                 kernel_size=1,
-                strides=strides,
+                strides=self.conv1.strides,
                 padding="same",
-                kernel_regularizer=regularizers.l2(weight_decay),
+                kernel_regularizer=regularizers.l2(self.conv1.kernel_regularizer.l2),
             )
             self.shortcut_bn = layers.BatchNormalization()
 
-    def call(self, inputs, training=False):
-        shortcut = inputs
+    def apply_shortcut(self, inputs, training):
+        if self.shortcut_conv is not None:
+            shortcut = self.shortcut_conv(inputs)
+            shortcut = self.shortcut_bn(shortcut, training=training)
+        else:
+            shortcut = inputs
+        return shortcut
+
+    def residual_path(self, inputs, training):
         x = self.conv1(inputs)
         x = self.bn1(x, training=training)
         x = self.relu(x)
         x = self.conv2(x)
         x = self.bn2(x, training=training)
+        return x
 
-        if self.shortcut_conv is not None:
-            shortcut = self.shortcut_conv(inputs)
-            shortcut = self.shortcut_bn(shortcut, training=training)
+    def call(self, inputs, training=False):
+        self.build_shortcut(inputs)
+        shortcut = self.apply_shortcut(inputs, training)
+
+        x = self.residual_path(inputs, training)
 
         x = layers.Add()([shortcut, x])
         x = self.relu(x)
