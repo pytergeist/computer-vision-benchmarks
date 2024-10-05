@@ -104,3 +104,4 @@ if __name__ == "__main__":
     history = model.fit(test_input, test_labels, epochs=1, verbose=1)
 
     model.summary()
+
