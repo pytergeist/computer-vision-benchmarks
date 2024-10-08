@@ -2,8 +2,16 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 
+
 class DenseNetBlock(tf.keras.layers.Layer):
-    def __init__(self, growth_rate, bottleneck_size, weight_decay=1e-4, dropout_rate=None, **kwargs):
+    def __init__(
+        self,
+        growth_rate,
+        bottleneck_size,
+        weight_decay=1e-4,
+        dropout_rate=None,
+        **kwargs
+    ):
         super(DenseNetBlock, self).__init__(**kwargs)
         self.growth_rate = growth_rate
         self.bottleneck_size = bottleneck_size
@@ -15,7 +23,7 @@ class DenseNetBlock(tf.keras.layers.Layer):
             kernel_size=1,
             strides=1,
             padding="same",
-            kernel_regularizer=regularizers.l2(weight_decay)
+            kernel_regularizer=regularizers.l2(weight_decay),
         )
         self.bn1 = layers.BatchNormalization()
         self.relu1 = layers.ReLU()
@@ -26,7 +34,7 @@ class DenseNetBlock(tf.keras.layers.Layer):
             kernel_size=3,
             strides=1,
             padding="same",
-            kernel_regularizer=regularizers.l2(weight_decay)
+            kernel_regularizer=regularizers.l2(weight_decay),
         )
         self.bn2 = layers.BatchNormalization()
         self.relu2 = layers.ReLU()
