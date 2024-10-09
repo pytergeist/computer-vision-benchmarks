@@ -4,6 +4,9 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras import regularizers
 
+from compvis.blocks.densenet_block import DenseNetBlock
+
+
 class DenseNet(tf.keras.Model):
     def __init__(
         self,
@@ -47,7 +50,7 @@ class DenseNet(tf.keras.Model):
             kernel_size=1,
             strides=1,
             padding="same",
-            kernel_regularizer=regularizers.l2(weight_decay)
+            kernel_regularizer=regularizers.l2(weight_decay),
         )
         self.compression_bn = layers.BatchNormalization()
 
@@ -63,20 +66,24 @@ class DenseNet(tf.keras.Model):
                     growth_rate=self.growth_rate,
                     bottleneck_size=self.bottleneck_size * self.growth_rate,
                     weight_decay=self.weight_decay,
-                    dropout_rate=self.dropout_rate
+                    dropout_rate=self.dropout_rate,
                 )
             )
             # After each Dense Block, apply compression and transition to the next block
             blocks.append(layers.BatchNormalization())
             blocks.append(layers.ReLU())
-            blocks.append(layers.Conv1D(
-                filters=int(self.num_filters * self.compression_factor),
-                kernel_size=1,
-                strides=1,
-                padding="same",
-                kernel_regularizer=regularizers.l2(self.weight_decay)
-            ))
-            blocks.append(layers.AveragePooling1D(pool_size=2, strides=2, padding="same"))
+            blocks.append(
+                layers.Conv1D(
+                    filters=int(self.num_filters * self.compression_factor),
+                    kernel_size=1,
+                    strides=1,
+                    padding="same",
+                    kernel_regularizer=regularizers.l2(self.weight_decay),
+                )
+            )
+            blocks.append(
+                layers.AveragePooling1D(pool_size=2, strides=2, padding="same")
+            )
         return blocks
 
     def call(self, inputs, training=False):
@@ -111,7 +118,7 @@ if __name__ == "__main__":
         num_blocks=num_blocks,
         growth_rate=growth_rate,
         bottleneck_size=bottleneck_size,
-        compression_factor=compression_factor
+        compression_factor=compression_factor,
     )
 
     model.build(input_shape=(None, input_shape[1], input_shape[2]))
