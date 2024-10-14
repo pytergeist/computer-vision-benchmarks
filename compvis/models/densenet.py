@@ -1,8 +1,7 @@
 # densenet.py
 
 import tensorflow as tf
-from tensorflow.keras import layers
-from tensorflow.keras import regularizers
+from tensorflow.keras import layers, regularizers
 
 from compvis.blocks.densenet_block import DenseNetBlock
 
