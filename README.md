@@ -1,2 +1,2 @@
 # computer-vision-benchmarks
-A repository to replucate ResNet and DenseNet architectures for cv task benchmarks
+A repository to reproduce experiments from the ResNet and DenseNet papers for cv task benchmarks
