@@ -19,7 +19,7 @@ class DenseNetBlock(tf.keras.layers.Layer):
         self.weight_decay = weight_decay
         self.dropout_rate = dropout_rate
 
-        self.bottleneck_conv = layers.Conv1D(
+        self.bottleneck_conv = layers.Conv2D(
             filters=bottleneck_size,
             kernel_size=1,
             strides=1,
@@ -29,8 +29,7 @@ class DenseNetBlock(tf.keras.layers.Layer):
         self.bn1 = layers.BatchNormalization()
         self.relu1 = layers.ReLU()
 
-        # 3x3 Conv
-        self.conv2 = layers.Conv1D(
+        self.conv2 = layers.Conv2D(
             filters=growth_rate,
             kernel_size=3,
             strides=1,
