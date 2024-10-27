@@ -30,7 +30,7 @@ class DenseNet(tf.keras.Model):
         self.dropout_rate = dropout_rate
 
         # Initial Conv layer
-        self.initial_conv = layers.Conv1D(
+        self.initial_conv = layers.Conv2D(
             filters=num_filters,
             kernel_size=7,
             strides=2,
@@ -43,7 +43,7 @@ class DenseNet(tf.keras.Model):
 
         self.densenet_blocks = self.generate_densenet_blocks()
 
-        self.compression_conv = layers.Conv1D(
+        self.compression_conv = layers.Conv2D(
             filters=int(self.num_filters * self.compression_factor),
             kernel_size=1,
             strides=1,
@@ -70,7 +70,7 @@ class DenseNet(tf.keras.Model):
             blocks.append(layers.BatchNormalization())
             blocks.append(layers.ReLU())
             blocks.append(
-                layers.Conv1D(
+                layers.Conv2D(
                     filters=int(self.num_filters * self.compression_factor),
                     kernel_size=1,
                     strides=1,

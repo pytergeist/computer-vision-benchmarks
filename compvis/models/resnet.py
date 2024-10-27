@@ -23,7 +23,7 @@ class ResNet(tf.keras.Model):
         self.dropout_rate = dropout_rate
         self.weight_decay = weight_decay
 
-        self.initial_conv = layers.Conv1D(
+        self.initial_conv = layers.Conv2D(
             filters=num_filters,
             kernel_size=7,
             strides=2,

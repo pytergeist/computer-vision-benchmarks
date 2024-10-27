@@ -9,7 +9,7 @@ class ResNetBlock(tf.keras.layers.Layer):
         self, filters, kernel_size, strides, weight_decay, dropout_rate=None, **kwargs
     ):
         super(ResNetBlock, self).__init__(**kwargs)
-        self.conv1 = layers.Conv1D(
+        self.conv1 = layers.Conv2D(
             filters=filters,
             kernel_size=kernel_size,
             strides=strides,
@@ -18,7 +18,7 @@ class ResNetBlock(tf.keras.layers.Layer):
         )
         self.bn1 = layers.BatchNormalization()
         self.relu = layers.ReLU()
-        self.conv2 = layers.Conv1D(
+        self.conv2 = layers.Conv2D(
             filters=filters,
             kernel_size=kernel_size,
             strides=1,
@@ -32,7 +32,7 @@ class ResNetBlock(tf.keras.layers.Layer):
 
     def build_shortcut(self, inputs):
         if self.shortcut_conv is None and inputs.shape[-1] != self.conv1.filters:
-            self.shortcut_conv = layers.Conv1D(
+            self.shortcut_conv = layers.Conv2D(
                 filters=self.conv1.filters,
                 kernel_size=1,
                 strides=self.conv1.strides,
