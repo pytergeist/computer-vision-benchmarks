@@ -43,7 +43,6 @@ class DenseNet(tf.keras.Model):
 
         self.densenet_blocks = self.generate_densenet_blocks()
 
-        # Compression Layer
         self.compression_conv = layers.Conv1D(
             filters=int(self.num_filters * self.compression_factor),
             kernel_size=1,
@@ -53,7 +52,6 @@ class DenseNet(tf.keras.Model):
         )
         self.compression_bn = layers.BatchNormalization()
 
-        # Final Layers
         self.global_avg_pool = layers.GlobalAveragePooling1D()
         self.fc = layers.Dense(units=num_classes, activation="softmax")
 
