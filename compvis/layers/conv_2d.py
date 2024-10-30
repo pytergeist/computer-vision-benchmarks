@@ -10,3 +10,8 @@ class Conv2D(tf.keras.layers.Layer):
     def build(self, input_shape):
         pass
 
+    def call(self, inputs, **kwargs):
+        pass
+
+    def compute_output_shape(self, input_shape):
+        pass
