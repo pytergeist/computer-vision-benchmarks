@@ -36,17 +36,3 @@ if __name__ == "__main__":
     outputs = relu(inputs)
     print("Inputs:\n", inputs)
     print("Outputs:\n", outputs)
-
-    # Uncomment the following lines to test fault tolerance
-
-    # Test with None input
-    # try:
-    #     outputs = relu(None)
-    # except ValueError as e:
-    #     print(e)
-
-    # Test with invalid input type
-    # try:
-    #     outputs = relu([1, 2, 3])
-    # except TypeError as e:
-    #     print(e)
