@@ -2,8 +2,9 @@
 
 import tensorflow as tf
 
-from compvis.layers.transformer_encoder import TransformerEncoderLayer
 from compvis.embedding.patch_embedding import PatchEmbedding
+from compvis.layers.transformer_encoder import TransformerEncoderLayer
+
 
 class VisionTransformerModel(tf.keras.Model):
     def __init__(

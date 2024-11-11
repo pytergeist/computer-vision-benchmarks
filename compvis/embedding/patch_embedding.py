@@ -6,7 +6,7 @@ class PatchEmbedding(tf.keras.layers.Layer):
         super().__init__(**kwargs)
         self.patch_dim = patch_dim
         self.embed_dim = embed_dim
-        self.conv_proj = tf.keras.layers.Conv1D(
+        self.conv_proj = tf.keras.layers.Conv2D(
             filters=embed_dim, kernel_size=patch_dim, strides=patch_dim
         )
         self.dropout_layer = tf.keras.layers.Dropout(rate=drop_rate)
