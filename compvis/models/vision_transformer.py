@@ -1,3 +1,6 @@
+# vision_transformer.py
+
+import tensorflow as tf
 class PatchEmbedding(tf.keras.layers.Layer):
     def __init__(self, patch_dim, embed_dim, drop_rate=0.0, **kwargs):
         super().__init__(**kwargs)
