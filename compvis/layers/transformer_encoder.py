@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from compvis.blocks.feed_forward_block import FeedForwardNetwork
 
+
 class TransformerEncoderLayer(tf.keras.layers.Layer):
     def __init__(
         self,
