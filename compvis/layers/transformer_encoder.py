@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+import tensorflow_addons as tfa
 from compvis.blocks.feed_forward_block import FeedForwardNetwork
 
 
@@ -25,7 +25,7 @@ class TransformerEncoderLayer(tf.keras.layers.Layer):
             use_bias=use_attn_bias,
             dropout=attn_dropout_rate,
         )
-        # self.stochastic_depth_layer = tfa.layers.StochasticDepth(survival_prob)
+        self.stochastic_depth_layer = tfa.layers.StochasticDepth(survival_prob)
         self.norm2 = tf.keras.layers.LayerNormalization()
         self.ffn = FeedForwardNetwork(
             hidden_units=mlp_units,
@@ -38,11 +38,11 @@ class TransformerEncoderLayer(tf.keras.layers.Layer):
         x, struct_feats = inputs
         norm_x = self.norm1(x, training=training)
         attn_output = self.multi_head_attn(norm_x, norm_x, training=training)
-        # x = self.stochastic_depth_layer([x, attn_output], training=training)
+        x = self.stochastic_depth_layer([x, attn_output], training=training)
         if self.film_layer:
             x = self.film_layer([x, struct_feats])
         ffn_output = self.ffn(self.norm2(x, training=training), training=training)
-        # x = self.stochastic_depth_layer([x, ffn_output], training=training)
+        x = self.stochastic_depth_layer([x, ffn_output], training=training)
         return x
 
     def get_attention_weights(self, x):
