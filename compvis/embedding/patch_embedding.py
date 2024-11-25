@@ -15,7 +15,7 @@ class PatchEmbedding(tf.keras.layers.Layer):
         self.cls_token = self.add_weight(
             shape=(1, 1, self.embed_dim), trainable=True, name="cls_token"
         )
-        num_patches = input_shape[1] // self.patch_dim
+        num_patches = (input_shape[1] // self.patch_dim) * (input_shape[2] // self.patch_dim)
         self.pos_embedding = self.add_weight(
             shape=(1, num_patches + 1, self.embed_dim),
             trainable=True,
@@ -24,7 +24,8 @@ class PatchEmbedding(tf.keras.layers.Layer):
 
     def call(self, inputs, training=False):
         batch_size = tf.shape(inputs)[0]
-        x = self.conv_proj(inputs, training=training)
+        x = self.conv_proj(inputs)
+        x = tf.reshape(x, [batch_size, -1, self.embed_dim])
         cls_tokens = tf.repeat(self.cls_token, repeats=batch_size, axis=0)
         x = tf.concat([cls_tokens, x], axis=1)
         x += self.pos_embedding

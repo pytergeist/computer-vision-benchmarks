@@ -54,22 +54,19 @@ class VisionTransformerModel(tf.keras.Model):
 
 
 if __name__ == "__main__":
-    # Sample input dimensions and model parameters
     batch_size = 2
-    img_size = 32  # Example image size (32x32)
+    img_size = 32
     patch_dim = 4
     embed_dim = 64
     num_layers = 2
     num_heads = 4
     mlp_units = 128
-    num_classes = 10  # Example number of classes
+    num_classes = 10
     drop_rate = 0.1
 
-    # Create a sample input tensor and a dummy structural feature input
-    sample_input = tf.random.normal((batch_size, img_size, img_size, 3))  # RGB image
-    struct_feats = tf.random.normal((batch_size, 5))  # Example structural features
+    sample_input = tf.random.normal((batch_size, img_size, img_size, 3))
+    struct_feats = tf.random.normal((batch_size, 5))
 
-    # Instantiate the Vision Transformer model
     vit_model = VisionTransformerModel(
         patch_dim=patch_dim,
         embed_dim=embed_dim,
@@ -80,9 +77,7 @@ if __name__ == "__main__":
         drop_rate=drop_rate,
     )
 
-    # Perform a forward pass
     output = vit_model((sample_input, struct_feats), training=False)
 
-    # Print the model summary and the output shape
     vit_model.summary()
     print("Output shape:", output.shape)
